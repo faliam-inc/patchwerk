@@ -17,7 +17,7 @@ func diffArrays(a, b []interface{}, p string) ([]*JSONPatchOperation, error) {
 	for i, ae := range a {
 		newEl := tmpEl{val: ae}
 		for j := i; j < len(b); j++ {
-			if len(b) <= j { //b is out of bounds
+			if len(b) <= j { // b is out of bounds
 				break
 			}
 			be := b[j]
@@ -43,12 +43,13 @@ func diffArrays(a, b []interface{}, p string) ([]*JSONPatchOperation, error) {
 			break
 		}
 		if aIndex >= len(a) { // a is out of bounds, all new items in b must be adds
-			patch = append(patch, NewPatch("add", newPath, b[tmpIndex]))
+			patch = append(patch, NewPatch("add", newPath, b[bIndex]))
 			addedDelta++
+			bIndex++
 			continue
 		}
 		if bIndex >= len(b) { // b is out of bounds, all new items in a must be removed
-			patch = append(patch, NewPatch("remove", newPath, a[tmpIndex]))
+			patch = append(patch, NewPatch("remove", newPath, a[aIndex]))
 			addedDelta--
 			aIndex++
 			continue
@@ -69,12 +70,11 @@ func diffArrays(a, b []interface{}, p string) ([]*JSONPatchOperation, error) {
 					bIndex++
 					break
 				} else {
-					patch = append(patch, NewPatch("remove", newPath, te.val)) //save value for remove so we can use it later
+					patch = append(patch, NewPatch("remove", newPath, te.val)) // save value for remove so we can use it later
 					addedDelta--
 					aIndex++
 					break
 				}
-
 			}
 		}
 	}
