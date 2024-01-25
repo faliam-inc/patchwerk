@@ -91,9 +91,17 @@ func DiffBytes(a, b []byte) ([]byte, error) {
 //   var rfc6901Decoder = strings.NewReplacer("~1", "/", "~0", "~")
 
 var rfc6901Encoder = strings.NewReplacer("~", "~0", "/", "~1")
+var jsonEscaper = strings.NewReplacer("\b", "\\b", "\f", "\\f", "\n", "\\n", "\r", "\\r", "\t", "\\t", "\"", "\\\"", "\\", "\\\\")
+
+// Added proper encoding for a few extra symbols per https://datatracker.ietf.org/doc/html/rfc4627#section-2.5
 
 func makePath(path string, newPart interface{}) string {
-	key := rfc6901Encoder.Replace(fmt.Sprintf("%v", newPart))
+	// First, escape JSON special characters
+	unescapedNewPart := jsonEscaper.Replace(fmt.Sprintf("%v", newPart))
+
+	// Next, escape special JSON Path characters.
+	key := rfc6901Encoder.Replace(unescapedNewPart)
+
 	if path == "" {
 		return "/" + key
 	}
