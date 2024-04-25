@@ -1,4 +1,4 @@
-module github.com/George-B-Simpson/patchwerk
+module github.com/faliam-inc/patchwerk
 
 go 1.21.4
 
